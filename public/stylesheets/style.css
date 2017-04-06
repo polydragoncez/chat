@@ -1,0 +1,39 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+table {
+    table-layout:fixed;
+    width: 100%;
+}
+table tr {
+    /*
+    border-bottom: 1px outset;
+    */
+}
+td {
+    word-wrap:break-word;
+    padding: 5px;
+    vertical-align: top;
+}
+
+h2 {
+    word-wrap:break-word;
+    padding: 5px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0px;
+}
+
+ul li{
+    font-size: 20px;
+    word-wrap:break-word;
+    margin-bottom: 10px;
+}

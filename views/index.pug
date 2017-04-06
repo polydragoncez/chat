@@ -1,0 +1,32 @@
+extends layout
+block content
+	.col-md-2
+	.col-md-8
+		.text-center
+			h1 Room List
+			ul#roomlist
+			form(method='POST', action='/room')
+				.form-group
+					label(for='channel') Channel:
+					input#channel.form-control(type='text', placeholder='channel name' name='channel')
+					button.btn.btn-default(type='submit', style='margin-top:20px;') Go
+	.col-md-2
+	script(type='text/javascript').
+		
+		$(function () { 
+			var socket = io('/index');
+			socket.on('roomChange', function(room){
+				socket.emit('roomChange', room);
+				$.each(room, function(index, value) {
+					//console.log(Object.keys(room[index]).length);
+					console.log(index);
+					console.log($('#'+index).length);
+					
+					if ($('#'+index).length)
+						$('#'+index).text(index+' ('+Object.keys(room[index]).length+')');
+					else
+						$('#roomlist').append('<a href='+index+'><li id='+index+'>'+index+' ('+Object.keys(room[index]).length+')'+'</li></a>');
+				}); 
+			});
+		});
+		

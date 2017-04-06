@@ -1,0 +1,95 @@
+extends layout
+block content
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  .col-md-2
+  .col-md-2
+    h2 Welcome #{channel}
+    h3 User List
+    ul#userlist
+  .col-md-6
+    section
+      table#messages
+      form#usernameform.form-inline(method='POST')
+        input#username_input.form-control(type='text', style='width: auto;', placeholder='your nickname' name='username')
+        button#usernamebtn.btn.btn-default(type='submit', style='width: auto;') Send
+      form#messageform.form-inline(method='POST', autocomplete='off')
+        input#message_input.form-control(type='text', style='width: 100%;', placeholder='say something' name='message')
+        button#messagebtn.btn.btn-default(type='submit', style='width: 100%;' disabled) Send
+  .col-md-2
+  script(type='text/javascript').
+    roomname="#{channel}";
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays*24*60*60*1000));
+      var expires = "expires="+ d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    function getCookie(cname) {
+      var name = cname + "=";
+      var ca = document.cookie.split(';');
+      for(var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+          }
+      }
+      return "";
+    }
+    $(function () {
+      if (getCookie('username')) {
+        $('#username_input').hide();
+        $('#usernamebtn').hide();
+        $('#messagebtn').prop('disabled', false);
+      }
+      else {
+        $('#message_input').hide();
+        $('#messagebtn').hide();
+      }
+      var socket = io('/room');
+      $('#messageform').submit(function(){
+        if ($('#message_input').val().length>0) {
+          socket.emit('messages', $('#message_input').val());
+          $('#message_input').val('');
+        }
+        return false;
+      });
+      
+      $('#usernameform').submit(function(){
+        if ($('#username_input').val().length>0) {
+          socket.emit('newuser', $('#username_input').val());
+          setCookie('username',$('#username_input').val(),1);
+          $('#username_input').val('');
+          $('#username_input').hide();
+          $('#usernamebtn').hide();
+          $('#message_input').show();
+          $('#messagebtn').show();
+          $('#messagebtn').prop('disabled', false);
+          
+          return false;
+        } else {
+          return false;
+        }
+      });
+      
+      socket.on('messages', function(data){
+        var username = data.user;
+        var msg = data.message;
+        $('#messages').append($('<tr><td width=20% style=vertical-align:top;>'+username+'</td><td width=80%>'+msg+'</td></tr>'));
+        window.scrollTo(0,document.body.scrollHeight);
+      });
+      
+      socket.on('userChange', function(room){
+        socket.emit('userChange', room);
+        $('#userlist').empty();
+        $.each(room[roomname], function(index, value) {
+          $('#userlist').append('<li>'+value+'</li>');
+        }); 
+      });
+      
+      socket.on('sys', function(msg){
+        $('#messages').append($('<tr><td width=20% style=vertical-align:top;>[System]</td><td width=80%>'+msg+'</td></tr>'));
+      });
+    });
