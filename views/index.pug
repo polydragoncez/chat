@@ -17,15 +17,9 @@ block content
 			var socket = io('/index');
 			socket.on('roomChange', function(room){
 				socket.emit('roomChange', room);
+				$('#roomlist').empty();
 				$.each(room, function(index, value) {
-					//console.log(Object.keys(room[index]).length);
-					console.log(index);
-					console.log($('#'+index).length);
-					
-					if ($('#'+index).length)
-						$('#'+index).text(index+' ('+Object.keys(room[index]).length+')');
-					else
-						$('#roomlist').append('<a href='+index+'><li id='+index+'>'+index+' ('+Object.keys(room[index]).length+')'+'</li></a>');
+						$('#roomlist').append('<a href='+index+'><li id='+index+'>'+decodeURIComponent(index)+' ('+Object.keys(room[index]).length+')'+'</li></a>');
 				}); 
 			});
 		});

@@ -7,7 +7,7 @@ module.exports = function(io){
 
     router.get('/*', function(req, res, next) {
         res.clearCookie('username');
-        res.render('room', { title: 'Express', channel: req.originalUrl.substring(1)});
+        res.render('room', { title: 'Express', channel: decodeURIComponent(req.originalUrl.substring(1))});
     });
     router.post('/*', function(req, res, next) {
         var channel = req.body.channel;
@@ -64,6 +64,6 @@ module.exports = function(io){
         });
 
     });
-    
+
     return router;
 };

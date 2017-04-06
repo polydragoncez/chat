@@ -1,2 +1,3 @@
 # chat
-socket.io 
+socket.io
+multi-room
